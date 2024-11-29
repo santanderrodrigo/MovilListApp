@@ -13,6 +13,12 @@
         android:theme="@style/Theme.ListApp"
         tools:targetApi="31">
         <activity
+            android:name=".ViewItemsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditItemActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddEditListaActivity"
             android:exported="false" />
         <activity

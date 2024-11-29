@@ -5,9 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [ListaEntity::class], version = 1)
+@Database(entities = [ListaEntity::class, ItemEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun listaDao(): ListaDao
+    abstract fun itemDao(): ItemDao  // Agrega este DAO
 
     companion object {
         @Volatile
@@ -19,7 +20,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "lista_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()  // Borrar y recrear la base de datos cuando hay una migración fallida
+                    .build()
                 INSTANCE = instance
                 instance
             }
