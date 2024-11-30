@@ -1,5 +1,5 @@
 package com.example.listapp
-
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,13 +8,10 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import android.widget.Spinner
-
+import java.util.*
 
 class AddEditListaActivity : AppCompatActivity() {
 
@@ -66,6 +63,10 @@ class AddEditListaActivity : AppCompatActivity() {
             }
         }
 
+        editFecha.setOnClickListener {
+            showDatePickerDialog()
+        }
+
         btnSave.setOnClickListener {
             val nombre = editNombre.text.toString()
             val fecha = editFecha.text.toString()
@@ -91,6 +92,23 @@ class AddEditListaActivity : AppCompatActivity() {
 
             finish()
         }
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+            val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+            editFecha.setText(selectedDate)
+        }, year, month, day)
+
+        // Establecer la fecha mínima en el DatePickerDialog
+        datePickerDialog.datePicker.minDate = calendar.timeInMillis
+
+        datePickerDialog.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

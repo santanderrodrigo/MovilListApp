@@ -31,6 +31,7 @@ class AddEditItemActivity : AppCompatActivity() {
         val itemViewModel: ItemViewModel by viewModels()
 
         if (itemId != -1) {
+            btnAddItem.text = "Guardar cambios"
             itemViewModel.getItemsByLista(listaId).observe(this) { items ->
                 val item = items.find { it.id == itemId }
                 item?.let {
@@ -38,6 +39,8 @@ class AddEditItemActivity : AppCompatActivity() {
                     editItemDescripcion.setText(it.descripcion)
                 }
             }
+        } else {
+            btnAddItem.text = "Agregar ítem"
         }
 
         btnAddItem.setOnClickListener {
