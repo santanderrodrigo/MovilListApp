@@ -2,6 +2,8 @@ package com.example.listapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -14,6 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var fabAdd: FloatingActionButton
+    private lateinit var textNoListas: TextView
     private val viewModel: ListaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         fabAdd = findViewById(R.id.fabAdd)
+        textNoListas = findViewById(R.id.textNoListas)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         val adapter = ListaAdapter(emptyList(), { lista ->
@@ -39,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.allListas.observe(this) { listas ->
             adapter.setList(listas)
+            textNoListas.visibility = if (listas.isEmpty()) View.VISIBLE else View.GONE
         }
 
         fabAdd.setOnClickListener {

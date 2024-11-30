@@ -1,11 +1,12 @@
 package com.example.listapp
 
-import android.content.DialogInterface
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,7 +16,11 @@ class ViewItemsActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
+    private lateinit var textNoItems: TextView
+    private lateinit var textTituloLista: TextView
+    private lateinit var textDescripcionLista: TextView
     private val itemViewModel: ItemViewModel by viewModels()
+    private val listaViewModel: ListaViewModel by viewModels()
     private var listaId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +30,9 @@ class ViewItemsActivity : AppCompatActivity() {
         listaId = intent.getIntExtra("LISTA_ID", 0)
 
         recyclerView = findViewById(R.id.recyclerView)
+        textNoItems = findViewById(R.id.textNoItems)
+        textTituloLista = findViewById(R.id.textTituloLista)
+        textDescripcionLista = findViewById(R.id.textDescripcionLista)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         itemAdapter = ItemAdapter(emptyList(), { item ->
@@ -39,6 +47,15 @@ class ViewItemsActivity : AppCompatActivity() {
 
         itemViewModel.getItemsByLista(listaId).observe(this) { items ->
             itemAdapter.setItems(items)
+            textNoItems.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        listaViewModel.allListas.observe(this) { listas ->
+            val lista = listas.find { it.id == listaId }
+            lista?.let {
+                textTituloLista.text = it.nombre
+                textDescripcionLista.text = it.descripcion
+            }
         }
 
         findViewById<FloatingActionButton>(R.id.fabAddItem).setOnClickListener {
