@@ -9,6 +9,10 @@ class ItemRepository(private val itemDao: ItemDao) {
         itemDao.insert(item)
     }
 
+    suspend fun update(item: ItemEntity) {
+        itemDao.update(item)
+    }
+
     suspend fun delete(item: ItemEntity) {
         itemDao.delete(item)
     }

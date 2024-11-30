@@ -25,8 +25,8 @@ class AddEditListaActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var btnSelectImage: Button
     private lateinit var btnSave: Button
-    private var selectedImageUri: Uri? = null  // Inicializa como null
-
+    private var selectedImageUri: Uri? = null
+    private var listaId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,19 +40,33 @@ class AddEditListaActivity : AppCompatActivity() {
         btnSelectImage = findViewById(R.id.btnSelectImage)
         btnSave = findViewById(R.id.btnSave)
 
-        // Configura el Spinner de prioridad
         val priorities = arrayOf("Alta", "Media", "Baja")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, priorities)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerPrioridad.adapter = adapter
 
-        // Configurar el botón para seleccionar una imagen
         btnSelectImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, IMAGE_PICK_CODE)
         }
 
-        // Configurar el botón de guardar
+        listaId = intent.getIntExtra("LISTA_ID", -1)
+        if (listaId != -1) {
+            // Cargar los datos de la lista para editar
+            val viewModel: ListaViewModel by viewModels()
+            viewModel.allListas.observe(this) { listas ->
+                val lista = listas.find { it.id == listaId }
+                lista?.let {
+                    editNombre.setText(it.nombre)
+                    editFecha.setText(it.fecha)
+                    spinnerPrioridad.setSelection(priorities.indexOf(it.prioridad))
+                    editDescripcion.setText(it.descripcion)
+                    selectedImageUri = it.imagenUri?.let { uri -> Uri.parse(uri) }
+                    imageView.setImageURI(selectedImageUri)
+                }
+            }
+        }
+
         btnSave.setOnClickListener {
             val nombre = editNombre.text.toString()
             val fecha = editFecha.text.toString()
@@ -61,6 +75,7 @@ class AddEditListaActivity : AppCompatActivity() {
             val imagenUri = selectedImageUri?.toString()
 
             val lista = ListaEntity(
+                id = listaId ?: 0,
                 nombre = nombre,
                 fecha = fecha,
                 prioridad = prioridad,
@@ -68,11 +83,14 @@ class AddEditListaActivity : AppCompatActivity() {
                 imagenUri = imagenUri
             )
 
-            // Guardar la lista
             val viewModel: ListaViewModel by viewModels()
-            viewModel.insert(lista)
+            if (listaId == -1) {
+                viewModel.insert(lista)
+            } else {
+                viewModel.update(lista)
+            }
 
-            finish()  // Regresar a la pantalla principal
+            finish()
         }
     }
 
@@ -81,7 +99,7 @@ class AddEditListaActivity : AppCompatActivity() {
 
         if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             selectedImageUri = data?.data
-            imageView.setImageURI(selectedImageUri)  // Muestra la imagen seleccionada
+            imageView.setImageURI(selectedImageUri)
         }
     }
 

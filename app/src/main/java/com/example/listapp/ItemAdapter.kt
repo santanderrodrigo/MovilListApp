@@ -6,12 +6,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ItemAdapter(private var items: List<ItemEntity>) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
+class ItemAdapter(
+    private var items: List<ItemEntity>,
+    private val onItemClick: (ItemEntity) -> Unit
+) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
-    // Método para actualizar los ítems
     fun setItems(newItems: List<ItemEntity>) {
         items = newItems
-        notifyDataSetChanged()  // Notifica al adaptador que los datos cambiaron
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -23,6 +25,9 @@ class ItemAdapter(private var items: List<ItemEntity>) : RecyclerView.Adapter<It
         val item = items[position]
         holder.nombre.text = item.nombre
         holder.descripcion.text = item.descripcion
+        holder.itemView.setOnClickListener {
+            onItemClick(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size

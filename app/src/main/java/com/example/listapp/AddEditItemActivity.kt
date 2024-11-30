@@ -10,10 +10,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class AddEditItemActivity : AppCompatActivity() {
-    // En tu actividad o fragmento donde agregas los ítems
+
     private lateinit var editItemNombre: EditText
     private lateinit var editItemDescripcion: EditText
     private lateinit var btnAddItem: Button
+    private var itemId: Int? = null
+    private var listaId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,25 +25,41 @@ class AddEditItemActivity : AppCompatActivity() {
         editItemDescripcion = findViewById(R.id.editItemDescripcion)
         btnAddItem = findViewById(R.id.btnAddItem)
 
+        listaId = intent.getIntExtra("LISTA_ID", 0)
+        itemId = intent.getIntExtra("ITEM_ID", -1)
+
+        if (itemId != -1) {
+            val itemViewModel: ItemViewModel by viewModels()
+            itemViewModel.itemsByLista.observe(this) { items ->
+                val item = items.find { it.id == itemId }
+                item?.let {
+                    editItemNombre.setText(it.nombre)
+                    editItemDescripcion.setText(it.descripcion)
+                }
+            }
+        }
+
         btnAddItem.setOnClickListener {
             val nombre = editItemNombre.text.toString()
             val descripcion = editItemDescripcion.text.toString()
 
             if (nombre.isNotBlank() && descripcion.isNotBlank()) {
                 val item = ItemEntity(
-                    listaId = 1, // Suponiendo que es la lista con ID 1
+                    id = itemId ?: 0,
+                    listaId = listaId,
                     nombre = nombre,
                     descripcion = descripcion
                 )
 
-                // Obtener el ViewModel y agregar el ítem
                 val itemViewModel: ItemViewModel by viewModels()
-                itemViewModel.insert(item)
+                if (itemId == -1) {
+                    itemViewModel.insert(item)
+                } else {
+                    itemViewModel.update(item)
+                }
 
-                // Regresar a la pantalla anterior o limpiar los campos
-                finish() // o limpiar los campos editables
+                finish()
             }
         }
     }
-
 }

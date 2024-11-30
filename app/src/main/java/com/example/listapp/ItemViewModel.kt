@@ -28,6 +28,10 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         repository.insert(item)
     }
 
+    fun update(item: ItemEntity) = viewModelScope.launch {
+        repository.update(item)
+    }
+
     fun delete(item: ItemEntity) = viewModelScope.launch {
         repository.delete(item)
     }

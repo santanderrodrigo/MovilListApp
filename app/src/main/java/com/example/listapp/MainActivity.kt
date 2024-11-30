@@ -23,17 +23,18 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         fabAdd = findViewById(R.id.fabAdd)
 
-        // Configura el RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = ListaAdapter(emptyList())  // Inicializa con una lista vacía
+        val adapter = ListaAdapter(emptyList()) { lista ->
+            val intent = Intent(this, ViewItemsActivity::class.java)
+            intent.putExtra("LISTA_ID", lista.id)
+            startActivity(intent)
+        }
         recyclerView.adapter = adapter
 
-        // Observa los cambios en el ViewModel
         viewModel.allListas.observe(this) { listas ->
-            adapter.setList(listas) // Actualiza la lista con el nuevo contenido
+            adapter.setList(listas)
         }
 
-        // Configura el FloatingActionButton
         fabAdd.setOnClickListener {
             startActivity(Intent(this, AddEditListaActivity::class.java))
         }

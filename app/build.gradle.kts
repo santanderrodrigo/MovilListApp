@@ -55,5 +55,8 @@ dependencies {
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel)    // ViewModel
     implementation(libs.androidx.lifecycle.livedata)     // LiveData
+    implementation(libs.androidx.recyclerview)  // Agrega esta línea
+
+
 
 }
