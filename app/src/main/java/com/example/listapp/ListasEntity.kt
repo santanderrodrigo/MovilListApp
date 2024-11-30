@@ -11,5 +11,5 @@ data class ListaEntity(
     val fecha: String,
     val prioridad: String,
     val descripcion: String,
-    val imagenUri: String? = null // Ruta opcional para la imagen
+    val imagenUri: String? = null
 )

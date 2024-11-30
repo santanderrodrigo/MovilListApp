@@ -52,7 +52,6 @@ class AddEditListaActivity : AppCompatActivity() {
 
         listaId = intent.getIntExtra("LISTA_ID", -1)
         if (listaId != -1) {
-            // Cargar los datos de la lista para editar
             val viewModel: ListaViewModel by viewModels()
             viewModel.allListas.observe(this) { listas ->
                 val lista = listas.find { it.id == listaId }
@@ -75,7 +74,7 @@ class AddEditListaActivity : AppCompatActivity() {
             val imagenUri = selectedImageUri?.toString()
 
             val lista = ListaEntity(
-                id = listaId ?: 0,
+                id = if (listaId == -1) 0 else listaId!!,
                 nombre = nombre,
                 fecha = fecha,
                 prioridad = prioridad,

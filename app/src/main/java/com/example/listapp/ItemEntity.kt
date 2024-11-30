@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class ItemEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val listaId: Int,  // Para vincular cada ítem con una lista específica
+    val listaId: Int,
     val nombre: String,
     val descripcion: String
 )

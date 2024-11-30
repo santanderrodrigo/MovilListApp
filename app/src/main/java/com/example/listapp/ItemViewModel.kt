@@ -2,6 +2,7 @@ package com.example.listapp
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.listapp.AppDatabase
@@ -18,10 +19,8 @@ class ItemViewModel(application: Application) : AndroidViewModel(application) {
         repository = ItemRepository(itemDao)
     }
 
-    fun getItemsByLista(listaId: Int) {
-        repository.getItemsByLista(listaId).observeForever {
-            itemsByLista.value = it
-        }
+    fun getItemsByLista(listaId: Int): LiveData<List<ItemEntity>> {
+        return repository.getItemsByLista(listaId)
     }
 
     fun insert(item: ItemEntity) = viewModelScope.launch {

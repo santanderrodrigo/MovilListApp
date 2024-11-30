@@ -28,9 +28,10 @@ class AddEditItemActivity : AppCompatActivity() {
         listaId = intent.getIntExtra("LISTA_ID", 0)
         itemId = intent.getIntExtra("ITEM_ID", -1)
 
+        val itemViewModel: ItemViewModel by viewModels()
+
         if (itemId != -1) {
-            val itemViewModel: ItemViewModel by viewModels()
-            itemViewModel.itemsByLista.observe(this) { items ->
+            itemViewModel.getItemsByLista(listaId).observe(this) { items ->
                 val item = items.find { it.id == itemId }
                 item?.let {
                     editItemNombre.setText(it.nombre)
@@ -45,13 +46,12 @@ class AddEditItemActivity : AppCompatActivity() {
 
             if (nombre.isNotBlank() && descripcion.isNotBlank()) {
                 val item = ItemEntity(
-                    id = itemId ?: 0,
+                    id = if (itemId == -1) 0 else itemId!!,
                     listaId = listaId,
                     nombre = nombre,
                     descripcion = descripcion
                 )
 
-                val itemViewModel: ItemViewModel by viewModels()
                 if (itemId == -1) {
                     itemViewModel.insert(item)
                 } else {

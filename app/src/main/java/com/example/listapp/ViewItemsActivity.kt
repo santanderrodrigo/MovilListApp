@@ -2,15 +2,11 @@ package com.example.listapp
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-
 
 class ViewItemsActivity : AppCompatActivity() {
 
@@ -31,13 +27,12 @@ class ViewItemsActivity : AppCompatActivity() {
         itemAdapter = ItemAdapter(emptyList()) { item ->
             val intent = Intent(this, AddEditItemActivity::class.java)
             intent.putExtra("ITEM_ID", item.id)
+            intent.putExtra("LISTA_ID", listaId)
             startActivity(intent)
         }
         recyclerView.adapter = itemAdapter
 
-        itemViewModel.getItemsByLista(listaId)
-
-        itemViewModel.itemsByLista.observe(this) { items ->
+        itemViewModel.getItemsByLista(listaId).observe(this) { items ->
             itemAdapter.setItems(items)
         }
 
