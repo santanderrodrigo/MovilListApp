@@ -5,10 +5,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import androidx.recyclerview.widget.RecyclerView // No olvides importar RecyclerView
-import com.example.listapp.ListaViewModel
-import com.example.listapp.ListaAdapter
 
 class MainActivity : AppCompatActivity() {
 

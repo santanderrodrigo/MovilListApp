@@ -1,8 +1,11 @@
 package com.example.listapp
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,12 +27,14 @@ class ViewItemsActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        itemAdapter = ItemAdapter(emptyList()) { item ->
+        itemAdapter = ItemAdapter(emptyList(), { item ->
             val intent = Intent(this, AddEditItemActivity::class.java)
             intent.putExtra("ITEM_ID", item.id)
             intent.putExtra("LISTA_ID", listaId)
             startActivity(intent)
-        }
+        }, { item ->
+            showDeleteConfirmationDialog(item)
+        })
         recyclerView.adapter = itemAdapter
 
         itemViewModel.getItemsByLista(listaId).observe(this) { items ->
@@ -41,5 +46,25 @@ class ViewItemsActivity : AppCompatActivity() {
             intent.putExtra("LISTA_ID", listaId)
             startActivity(intent)
         }
+    }
+
+    private fun showDeleteConfirmationDialog(item: ItemEntity) {
+        AlertDialog.Builder(this)
+            .setTitle("Eliminar Ítem")
+            .setMessage("¿Estás seguro de que deseas eliminar este ítem?")
+            .setPositiveButton("Sí") { dialog, _ ->
+                deleteItem(item)
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private fun deleteItem(item: ItemEntity) {
+        itemViewModel.delete(item)
+        Toast.makeText(this, "Ítem eliminado con éxito", Toast.LENGTH_SHORT).show()
     }
 }

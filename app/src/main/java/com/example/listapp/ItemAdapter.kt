@@ -3,14 +3,14 @@ package com.example.listapp
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.listapp.ItemEntity
-import com.example.listapp.R
 
 class ItemAdapter(
     private var items: List<ItemEntity>,
-    private val onItemClick: (ItemEntity) -> Unit
+    private val onItemClick: (ItemEntity) -> Unit,
+    private val onDeleteClick: (ItemEntity) -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     fun setItems(newItems: List<ItemEntity>) {
@@ -19,7 +19,7 @@ class ItemAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_lista, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_item, parent, false)
         return ItemViewHolder(itemView)
     }
 
@@ -30,6 +30,9 @@ class ItemAdapter(
         holder.itemView.setOnClickListener {
             onItemClick(item)
         }
+        holder.btnDeleteItem.setOnClickListener {
+            onDeleteClick(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size
@@ -37,5 +40,6 @@ class ItemAdapter(
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nombre: TextView = itemView.findViewById(R.id.textNombre)
         val descripcion: TextView = itemView.findViewById(R.id.textDescripcion)
+        val btnDeleteItem: Button = itemView.findViewById(R.id.btnDeleteItem)
     }
 }

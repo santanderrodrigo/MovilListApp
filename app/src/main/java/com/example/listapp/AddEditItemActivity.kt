@@ -1,13 +1,10 @@
 package com.example.listapp
-
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class AddEditItemActivity : AppCompatActivity() {
 
@@ -44,25 +41,39 @@ class AddEditItemActivity : AppCompatActivity() {
         }
 
         btnAddItem.setOnClickListener {
-            val nombre = editItemNombre.text.toString()
-            val descripcion = editItemDescripcion.text.toString()
+            if (validateInputs()) {
+                val nombre = editItemNombre.text.toString()
+                val descripcion = editItemDescripcion.text.toString()
 
-            if (nombre.isNotBlank() && descripcion.isNotBlank()) {
-                val item = ItemEntity(
-                    id = if (itemId == -1) 0 else itemId!!,
-                    listaId = listaId,
-                    nombre = nombre,
-                    descripcion = descripcion
-                )
+                if (nombre.isNotBlank() && descripcion.isNotBlank()) {
+                    val item = ItemEntity(
+                        id = if (itemId == -1) 0 else itemId!!,
+                        listaId = listaId,
+                        nombre = nombre,
+                        descripcion = descripcion
+                    )
 
-                if (itemId == -1) {
-                    itemViewModel.insert(item)
-                } else {
-                    itemViewModel.update(item)
+                    if (itemId == -1) {
+                        itemViewModel.insert(item)
+                    } else {
+                        itemViewModel.update(item)
+                    }
+
+                    finish()
                 }
-
-                finish()
             }
         }
+    }
+
+    private fun validateInputs(): Boolean {
+        if (editItemNombre.text.isBlank()) {
+            Toast.makeText(this, "El nombre no puede estar vacío", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (editItemDescripcion.text.isBlank()) {
+            Toast.makeText(this, "La descripción no puede estar vacía", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 }

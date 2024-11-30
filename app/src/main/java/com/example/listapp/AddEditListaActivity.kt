@@ -1,4 +1,5 @@
 package com.example.listapp
+
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
@@ -68,29 +70,33 @@ class AddEditListaActivity : AppCompatActivity() {
         }
 
         btnSave.setOnClickListener {
-            val nombre = editNombre.text.toString()
-            val fecha = editFecha.text.toString()
-            val prioridad = spinnerPrioridad.selectedItem.toString()
-            val descripcion = editDescripcion.text.toString()
-            val imagenUri = selectedImageUri?.toString()
+            if (validateInputs()) {
+                val nombre = editNombre.text.toString()
+                val fecha = editFecha.text.toString()
+                val prioridad = spinnerPrioridad.selectedItem.toString()
+                val descripcion = editDescripcion.text.toString()
+                val imagenUri = selectedImageUri?.toString()
 
-            val lista = ListaEntity(
-                id = if (listaId == -1) 0 else listaId!!,
-                nombre = nombre,
-                fecha = fecha,
-                prioridad = prioridad,
-                descripcion = descripcion,
-                imagenUri = imagenUri
-            )
+                val lista = ListaEntity(
+                    id = if (listaId == -1) 0 else listaId!!,
+                    nombre = nombre,
+                    fecha = fecha,
+                    prioridad = prioridad,
+                    descripcion = descripcion,
+                    imagenUri = imagenUri
+                )
 
-            val viewModel: ListaViewModel by viewModels()
-            if (listaId == -1) {
-                viewModel.insert(lista)
-            } else {
-                viewModel.update(lista)
+                val viewModel: ListaViewModel by viewModels()
+                if (listaId == -1) {
+                    viewModel.insert(lista)
+                    Toast.makeText(this, "Lista creada con éxito", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.update(lista)
+                    Toast.makeText(this, "Lista actualizada con éxito", Toast.LENGTH_SHORT).show()
+                }
+
+                finish()
             }
-
-            finish()
         }
     }
 
@@ -109,6 +115,22 @@ class AddEditListaActivity : AppCompatActivity() {
         datePickerDialog.datePicker.minDate = calendar.timeInMillis
 
         datePickerDialog.show()
+    }
+
+    private fun validateInputs(): Boolean {
+        if (editNombre.text.isBlank()) {
+            Toast.makeText(this, "El nombre no puede estar vacío", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (editFecha.text.isBlank()) {
+            Toast.makeText(this, "La fecha no puede estar vacía", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (editDescripcion.text.isBlank()) {
+            Toast.makeText(this, "La descripción no puede estar vacía", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
