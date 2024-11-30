@@ -1,17 +1,21 @@
 package com.example.listapp
 
 import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class ListaAdapter(
     private var listas: List<ListaEntity>,
-    private val onItemClick: (ListaEntity) -> Unit
+    private val onItemClick: (ListaEntity) -> Unit,
+    private val onEditClick: (ListaEntity) -> Unit,
+    private val onDeleteClick: (ListaEntity) -> Unit
 ) : RecyclerView.Adapter<ListaAdapter.ListaViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaViewHolder {
@@ -23,12 +27,27 @@ class ListaAdapter(
         val lista = listas[position]
         holder.nombre.text = lista.nombre
         holder.fecha.text = lista.fecha
+        holder.prioridad.text = lista.prioridad
         holder.itemView.setOnClickListener {
             onItemClick(lista)
         }
         holder.itemView.setOnLongClickListener {
             showPopupMenu(holder.itemView, lista)
             true
+        }
+
+        if (lista.imagenUri != null) {
+            holder.imagen.visibility = View.VISIBLE
+            holder.imagen.setImageURI(Uri.parse(lista.imagenUri))
+        } else {
+            holder.imagen.visibility = View.GONE
+        }
+
+        // Set color based on priority
+        when (lista.prioridad) {
+            "Alta" -> holder.prioridad.setTextColor(holder.itemView.context.getColor(android.R.color.holo_red_dark))
+            "Media" -> holder.prioridad.setTextColor(holder.itemView.context.getColor(android.R.color.holo_orange_dark))
+            "Baja" -> holder.prioridad.setTextColor(holder.itemView.context.getColor(android.R.color.holo_green_dark))
         }
     }
 
@@ -42,17 +61,15 @@ class ListaAdapter(
     private fun showPopupMenu(view: View, lista: ListaEntity) {
         val popupMenu = PopupMenu(view.context, view)
         val inflater: MenuInflater = popupMenu.menuInflater
-        inflater.inflate(R.menu.menu_lista, popupMenu.menu)
+        inflater.inflate(R.menu.menu_lista_contextual, popupMenu.menu)
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_edit -> {
-                    val intent = Intent(view.context, AddEditListaActivity::class.java)
-                    intent.putExtra("LISTA_ID", lista.id)
-                    view.context.startActivity(intent)
+                    onEditClick(lista)
                     true
                 }
                 R.id.action_delete -> {
-                    // Implementar la lógica para eliminar la lista
+                    onDeleteClick(lista)
                     true
                 }
                 else -> false
@@ -64,5 +81,7 @@ class ListaAdapter(
     class ListaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nombre: TextView = itemView.findViewById(R.id.textNombre)
         val fecha: TextView = itemView.findViewById(R.id.textFecha)
+        val prioridad: TextView = itemView.findViewById(R.id.textPrioridad)
+        val imagen: ImageView = itemView.findViewById(R.id.imageLista)
     }
 }
