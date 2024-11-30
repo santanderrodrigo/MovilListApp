@@ -1,6 +1,6 @@
 package com.example.listapp
-import androidx.lifecycle.LiveData
 
+import androidx.lifecycle.LiveData
 
 class ListaRepository(private val listaDao: ListaDao) {
     val allListas: LiveData<List<ListaEntity>> = listaDao.getAllListas()

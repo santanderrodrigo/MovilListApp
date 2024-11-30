@@ -8,7 +8,7 @@ data class ListaEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val nombre: String,
-    val fecha: String,
+    val fecha: Long,
     val prioridad: String,
     val descripcion: String,
     val imagenUri: String? = null

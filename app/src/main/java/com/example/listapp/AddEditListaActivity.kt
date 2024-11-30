@@ -13,6 +13,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
 import java.util.*
 
 class AddEditListaActivity : AppCompatActivity() {
@@ -26,6 +27,7 @@ class AddEditListaActivity : AppCompatActivity() {
     private lateinit var btnSave: Button
     private var selectedImageUri: Uri? = null
     private var listaId: Int? = null
+    private var selectedDateInMillis: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +58,8 @@ class AddEditListaActivity : AppCompatActivity() {
                 val lista = listas.find { it.id == listaId }
                 lista?.let {
                     editNombre.setText(it.nombre)
-                    editFecha.setText(it.fecha)
+                    editFecha.setText(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(it.fecha)))
+                    selectedDateInMillis = it.fecha
                     spinnerPrioridad.setSelection(priorities.indexOf(it.prioridad))
                     editDescripcion.setText(it.descripcion)
                     selectedImageUri = it.imagenUri?.let { uri -> Uri.parse(uri) }
@@ -72,7 +75,7 @@ class AddEditListaActivity : AppCompatActivity() {
         btnSave.setOnClickListener {
             if (validateInputs()) {
                 val nombre = editNombre.text.toString()
-                val fecha = editFecha.text.toString()
+                val fecha = selectedDateInMillis
                 val prioridad = spinnerPrioridad.selectedItem.toString()
                 val descripcion = editDescripcion.text.toString()
                 val imagenUri = selectedImageUri?.toString()
@@ -107,8 +110,10 @@ class AddEditListaActivity : AppCompatActivity() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-            editFecha.setText(selectedDate)
+            val selectedDate = Calendar.getInstance()
+            selectedDate.set(selectedYear, selectedMonth, selectedDay)
+            selectedDateInMillis = selectedDate.timeInMillis
+            editFecha.setText(SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(selectedDate.time))
         }, year, month, day)
 
         // Establecer la fecha mínima en el DatePickerDialog

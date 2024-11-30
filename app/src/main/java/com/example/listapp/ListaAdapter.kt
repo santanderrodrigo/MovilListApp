@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ListaAdapter(
     private var listas: List<ListaEntity>,
@@ -26,7 +28,7 @@ class ListaAdapter(
     override fun onBindViewHolder(holder: ListaViewHolder, position: Int) {
         val lista = listas[position]
         holder.nombre.text = lista.nombre
-        holder.fecha.text = lista.fecha
+        holder.fecha.text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(lista.fecha))
         holder.prioridad.text = lista.prioridad
         holder.itemView.setOnClickListener {
             onItemClick(lista)
