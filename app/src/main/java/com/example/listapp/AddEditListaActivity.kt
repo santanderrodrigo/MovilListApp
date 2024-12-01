@@ -1,8 +1,11 @@
 package com.example.listapp
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.ArrayAdapter
@@ -11,8 +14,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,6 +33,17 @@ class AddEditListaActivity : AppCompatActivity() {
     private var selectedImageUri: Uri? = null
     private var listaId: Int? = null
     private var selectedDateInMillis: Long = 0
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true ||
+            permissions[Manifest.permission.READ_MEDIA_IMAGES] == true) {
+            selectImage()
+        } else {
+            Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +63,25 @@ class AddEditListaActivity : AppCompatActivity() {
         spinnerPrioridad.adapter = adapter
 
         btnSelectImage.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, IMAGE_PICK_CODE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_MEDIA_IMAGES
+                    ) == PackageManager.PERMISSION_GRANTED) {
+                    selectImage()
+                } else {
+                    requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_MEDIA_IMAGES))
+                }
+            } else {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED) {
+                    selectImage()
+                } else {
+                    requestPermissionLauncher.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+                }
+            }
         }
 
         listaId = intent.getIntExtra("LISTA_ID", -1)
@@ -138,12 +171,22 @@ class AddEditListaActivity : AppCompatActivity() {
         return true
     }
 
+    private fun selectImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             selectedImageUri = data?.data
-            imageView.setImageURI(selectedImageUri)
+            try {
+                imageView.setImageURI(selectedImageUri)
+            } catch (e: SecurityException) {
+                Toast.makeText(this, "No se puede acceder a esta imagen", Toast.LENGTH_SHORT).show()
+                imageView.setImageResource(R.drawable.ic_placeholder) // Placeholder image
+            }
         }
     }
 

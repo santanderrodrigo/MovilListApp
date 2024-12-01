@@ -27,6 +27,14 @@ class MainActivity : AppCompatActivity() {
         fabAdd = findViewById(R.id.fabAdd)
         textNoListas = findViewById(R.id.textNoListas)
 
+        setupRecyclerView()
+
+        fabAdd.setOnClickListener {
+            startActivity(Intent(this, AddEditListaActivity::class.java))
+        }
+    }
+
+    private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         val adapter = ListaAdapter(emptyList(), { lista ->
             val intent = Intent(this, ViewItemsActivity::class.java)
@@ -44,10 +52,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.allListas.observe(this) { listas ->
             adapter.setList(listas)
             textNoListas.visibility = if (listas.isEmpty()) View.VISIBLE else View.GONE
-        }
-
-        fabAdd.setOnClickListener {
-            startActivity(Intent(this, AddEditListaActivity::class.java))
         }
     }
 

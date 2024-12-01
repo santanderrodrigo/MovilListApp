@@ -40,7 +40,11 @@ class ListaAdapter(
 
         if (lista.imagenUri != null) {
             holder.imagen.visibility = View.VISIBLE
-            holder.imagen.setImageURI(Uri.parse(lista.imagenUri))
+            try {
+                holder.imagen.setImageURI(Uri.parse(lista.imagenUri))
+            } catch (e: SecurityException) {
+                holder.imagen.setImageResource(R.drawable.ic_placeholder) // Placeholder image
+            }
         } else {
             holder.imagen.visibility = View.GONE
         }
